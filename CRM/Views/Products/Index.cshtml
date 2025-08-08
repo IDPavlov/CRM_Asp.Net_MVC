@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Продукты";
+}
+@model List<Product>
+
+<h2>Продукты</h2>
+<p><a asp-action="Create">Создать продукт</a></p>
+
+<form asp-action="Index" method="get">
+    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" />
+    <button type="submit">Поиск</button>
+</form>
+
+<a asp-action="Index" asp-route-sortOrder="@ViewData["PriceSort"]">Сортировать по цене</a>
+
+<table>
+    <tr>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Описание</th>
+    </tr>
+    @foreach(var product in Model)
+    {
+        <tr>
+            <td>@product.Name</td>
+            <td>@product.Price</td>
+            <td>@product.Description</td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Добавить сделку";
+}
+@model CreateDealDto
+
+<form asp-action="Create" method="post">
+    <div>
+        <label asp-for="Amount">Количество</label>
+        <input asp-for="Amount" type="number"/>
+    </div>
+
+    <div>
+        <label asp-for="Date">Дата</label>
+        <input asp-for="Date" />
+    </div>
+
+    <div>
+        <label asp-for="StatusId">Статус</label>
+        <select asp-for="StatusId">
+            @foreach (var status in ViewBag.Statuses)
+            {
+                <option value="@status.Id">@status.Name</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label asp-for="ManagerId">Менеджер</label>
+        <select asp-for="ManagerId">
+            @foreach (var manager in ViewBag.Managers)
+            {
+                <option value="@manager.Id">@manager.Name</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label asp-for="ClientId">Клиент</label>
+        <select asp-for="ClientId">
+            @foreach (var client in ViewBag.Clients)
+            {
+                <option value="@client.Id">@client.Name</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label asp-for="ProductId">Продукт</label>
+        <select asp-for="ProductId">
+            <option value="">-</option>
+            @foreach (var product in ViewBag.Products)
+            {
+                <option value="@product.Id">@product.Name (@product.Price руб.)</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit">Сохранить</button>
+</form>

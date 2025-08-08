@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Добавить клиента";
+}
+@model CRM.Models.Client
+
+<h2>Добавить клиента</h2>
+<form asp-action="Create" method="post">
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+    </div>
+    <div>
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" />
+    </div>
+    <button type="submit">Сохранить</button>
+</form>

@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Подробности";
+}
+@model CRM.Models.Client
+
+<h2>@Model.Name</h2>
+
+<h4>Сделки</h4>
+<table>
+    @foreach (var deal in Model.Deals)
+    {
+        <tr>
+            <td>@deal.Amount.ToString("C")</td>
+            <td>@deal.Status.Name</td>
+        </tr>
+    }
+</table>
+
+<h4>Взаимодействия</h4>
+<table>
+    @foreach (var interaction in Model.Interactions)
+    {
+        <tr>
+            <td>@interaction.Date.ToString()</td>
+            <td>@interaction.Type</td>
+        </tr>
+        <tr>
+            @interaction.Notes
+        </tr>
+    }
+</table>
