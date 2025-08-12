@@ -1,29 +1,39 @@
-using System.Diagnostics;
+﻿using CRM.Data;
 using CRM.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace CRM.Controllers
 {
+    [Route("")]
+    [Route("{controller}")]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> logger;
+        private readonly CrmDbContext db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, CrmDbContext db)
         {
-            _logger = logger;
+            this.logger = logger;
+            this.db = db;
         }
 
+        [Route("")]
         public IActionResult Index()
         {
+            ViewData["Sum"] = db.Deals.Sum(d => d.Amount);
             return View();
         }
 
+        [Route("{action}")]
         public IActionResult Privacy()
         {
             return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [Route("{action}")]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

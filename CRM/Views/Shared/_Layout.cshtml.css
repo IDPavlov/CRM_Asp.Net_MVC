@@ -49,6 +49,7 @@ button.accept-policy {
 
 table {
     cellpadding: 3;
+    margin: 3;
     border: 1;
 }
 

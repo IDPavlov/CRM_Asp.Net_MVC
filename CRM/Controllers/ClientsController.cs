@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Controllers
 {
+    [Route("{controller}")]
     public class ClientsController : Controller
     {
         private readonly CrmDbContext db;
@@ -14,7 +15,7 @@ namespace CRM.Controllers
             this.db = db;
         }
 
-        // GET: Clients
+        [Route("{sortOrder?}/{searchString?}")]
         public async Task<IActionResult> Index(
             string? sortOrder,
             string? searchString)
@@ -41,16 +42,16 @@ namespace CRM.Controllers
             return View(await clients.ToListAsync());
         }
 
-        // GET: Clients/Create
         [HttpGet]
+        [Route("{action}")]
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Clients/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("{action}")]
         public async Task<ActionResult> Create(Client client)
         {
             if (ModelState.IsValid)
@@ -62,26 +63,33 @@ namespace CRM.Controllers
             return View(client);
         }
 
+        [Route("{action}/{id}")]
         public async Task<IActionResult> Details(int id)
         {
             var client = await db.Clients
-                .Include(c => c.Deals)          // Подгружаем сделки
-                .Include(c => c.Interactions)   // Подгружаем взаимодействия
+                .Include(c => c.Interactions)
+                .Include(c => c.Deals)
+                    .ThenInclude(d => d.Status)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (client == null) return NotFound();
-
-            return View(client);
+            if (client == null) 
+                return NotFound();
+            else
+                return View(client);
         }
 
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("{action}/{id:int}")]
+        public async Task<IActionResult> Delete(int id)
         {
             var client = await db.Clients
                 .Include(c => c.Deals)
+                    .ThenInclude(d => d.Status)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (client == null) return NotFound();
+            if (client == null) 
+                return NotFound();
 
             if (client.Deals.Any(d => d.Status.Name != "Completed"))
             {
@@ -92,6 +100,28 @@ namespace CRM.Controllers
             db.Clients.Remove(client);
             await db.SaveChangesAsync();
 
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        [Route("{action}/{id}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+
+            Client? client = await db.Clients.FirstOrDefaultAsync(p => p.Id == id);
+            if (client != null) 
+                return View(client);
+            else
+                return NotFound();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("{action}")]
+        public async Task<IActionResult> Edit(Client client)
+        {
+            db.Clients.Update(client);
+            await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

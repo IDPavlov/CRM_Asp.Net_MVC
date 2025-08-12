@@ -3,7 +3,13 @@
 }
 @model CRM.Models.Client
 
+@if(Model != null)
+{
 <h2>@Model.Name</h2>
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+    <button type="submit">Удалить</button>
+</form>
 
 <h4>Сделки</h4>
 <table>
@@ -11,7 +17,7 @@
     {
         <tr>
             <td>@deal.Amount.ToString("C")</td>
-            <td>@deal.Status.Name</td>
+            <td>@(deal.Status?.Name ?? "Без статуса")</td> <!-- Защита от null -->
         </tr>
     }
 </table>
@@ -21,11 +27,23 @@
     @foreach (var interaction in Model.Interactions)
     {
         <tr>
-            <td>@interaction.Date.ToString()</td>
+            <td>@interaction.Date</td>
             <td>@interaction.Type</td>
         </tr>
         <tr>
             @interaction.Notes
         </tr>
     }
-</table>
+    </table>
+}
+else
+{
+    <h2>Нет такого клиента</h2>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div>
+        @TempData["ErrorMessage"]
+    </div>
+}

@@ -4,14 +4,10 @@
 @model CreateDealDto
 
 <form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
     <div>
-        <label asp-for="Amount">Количество</label>
+        <label asp-for="Amount">Сумма</label>
         <input asp-for="Amount" type="number"/>
-    </div>
-
-    <div>
-        <label asp-for="Date">Дата</label>
-        <input asp-for="Date" />
     </div>
 
     <div>

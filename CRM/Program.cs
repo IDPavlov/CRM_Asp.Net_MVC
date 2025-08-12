@@ -51,6 +51,10 @@ public class Program
             pattern: "{controller=Clients}/{action=Details}").WithStaticAssets();
 
         app.MapControllerRoute(
+            name: "clients",
+            pattern: "{controller=Clients}/{action=Delete}").WithStaticAssets();
+
+        app.MapControllerRoute(
             name: "products",
             pattern: "{controller=Products}/{action=Index}/{id?}").WithStaticAssets();
 
@@ -65,6 +69,10 @@ public class Program
         app.MapControllerRoute(
             name: "deals",
             pattern: "{controller=Deals}/{action=Create}").WithStaticAssets();
+
+        app.MapControllerRoute(
+            name: "deals",
+            pattern: "{controller=Deals}/{action=Delete}").WithStaticAssets();
 
         await app.RunAsync();
     }

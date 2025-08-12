@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Изменить данные о клиенте";
+}
+@model Client
+
+<h2>Изменить данные о клиенте</h2>
+<form asp-action="Edit" method="post" asp-route-id="@Model.Id">
+    @Html.AntiForgeryToken()
+    <div>
+        <label asp-for="Name">Имя</label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label asp-for="Email">Почта</label>
+        <input asp-for="Email" />
+    </div>
+    <div>
+        <label asp-for="Phone">Телефон</label>
+        <input asp-for="Phone" />
+    </div>
+    <button type="submit">Сохранить</button>
+</form>

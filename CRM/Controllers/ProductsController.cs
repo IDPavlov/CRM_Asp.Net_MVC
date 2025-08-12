@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Controllers
 {
+    [Route("{controller}")]
     public class ProductsController : Controller
     {
         private readonly CrmDbContext db;
@@ -14,6 +15,7 @@ namespace CRM.Controllers
             this.db = db;
         }
 
+        [Route("")]
         public async Task<IActionResult> Index(
             string? sortOrder,
             string? searchString)
@@ -38,6 +40,7 @@ namespace CRM.Controllers
         }
 
         [HttpGet]
+        [Route("{action}")]
         public IActionResult Create()
         {
             return View();
@@ -45,6 +48,7 @@ namespace CRM.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("{action}")]
         public async Task<IActionResult> Create(Product product)
         {
             if (ModelState.IsValid)

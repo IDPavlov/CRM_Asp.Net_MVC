@@ -34,9 +34,6 @@ public class CreateDealDto
     [Range(0.01, 1000000, ErrorMessage = "Сумма должна быть больше 0")]
     public decimal Amount { get; set; }
 
-    [Required(ErrorMessage = "Укажите дату")]
-    public DateTime Date { get; set; } = DateTime.UtcNow;
-
     [Required(ErrorMessage = "Укажите клиента")]
     public int ClientId { get; set; }
 
