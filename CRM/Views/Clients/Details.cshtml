@@ -16,7 +16,8 @@
     @foreach (var deal in Model.Deals)
     {
         <tr>
-            <td>@deal.Amount.ToString("C")</td>
+            <td>@deal.ServicePrice?.ToString("C")</td>
+            <td>@deal.TotalAmount?.ToString("C")</td>
             <td>@(deal.Status?.Name ?? "Без статуса")</td> <!-- Защита от null -->
         </tr>
     }

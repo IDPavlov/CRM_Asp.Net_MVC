@@ -1,13 +1,19 @@
-﻿@{
-    ViewData["Title"] = "Добавить сделку";
-}
-@model CreateDealDto
+﻿@model CreateDealDto
 
 <form asp-action="Create" method="post">
     @Html.AntiForgeryToken()
-    <div>
-        <label asp-for="Amount">Сумма</label>
-        <input asp-for="Amount" type="number"/>
+
+    <div class="form-group">
+        <label>Тип сделки:</label>
+        <select id="dealType" asp-for="DealType" class="form-control">
+            <option value="product">Товарная</option>
+            <option value="service">Услуга (фиксированная сумма)</option>
+        </select>
+    </div>
+
+    <div id="ServicePriceSection">
+        <label asp-for="ServicePrice">Стоимость услуги</label>
+        <input asp-for="ServicePrice" type="number" />
     </div>
 
     <div>
@@ -40,16 +46,117 @@
         </select>
     </div>
 
-    <div>
-        <label asp-for="ProductId">Продукт</label>
-        <select asp-for="ProductId">
-            <option value="">-</option>
-            @foreach (var product in ViewBag.Products)
-            {
-                <option value="@product.Id">@product.Name (@product.Price руб.)</option>
-            }
-        </select>
+    <div id="ProductsSection">
+        <table id="products-table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Количество</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.DealProducts != null)
+                {
+                    @for (var i = 0; i < Model.DealProducts.Count; i++)
+                    {
+                        /*
+                        <tr>
+                            <td>
+                                <label asp-for="DealProducts[i].ProductId"> Выберите товар </label>
+                                <select asp-for="DealProducts[i].ProductId" 
+                                asp-items="@(new SelectList(ViewBag.Products, "Id", "Name" ))" />
+                            </td>
+                            <td>
+                                <input asp-for="DealProducts[i].Quantity" type="number" min="1"/>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger remove-row">×</button>
+                            </td>
+                        </tr>
+                        */
+                        <tr>
+                            <td>
+                                <select asp-for="DealProducts[i].ProductId" class="form-control">
+                                    @foreach (Product item in ViewBag.Products)
+                                    {
+                                        <option value="@item.Id">@item.Name -- @item.Price</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input asp-for="DealProducts[i].Quantity" type="number" min="1" value="1" class="form-control" />
+                            </td>
+                            <td>
+                                <button type="button" onclick="removeRow(this)" class="btn btn-danger">×</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        <button type="button" id="add-product" class="btn btn-secondary">
+            + Добавить товар
+        </button>
     </div>
 
+    <hr />
     <button type="submit">Сохранить</button>
 </form>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<script>
+    document.getElementById('dealType').addEventListener('change', function() {
+        const isService = this.value === 'service';
+        document.getElementById('ProductsSection').style.display = isService ? 'none' : 'block';
+        document.getElementById('ServicePriceSection').style.display = isService ? 'block' : 'none';
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const dealType = document.getElementById('dealType');
+        if (dealType) {
+            dealType.dispatchEvent(new Event('change'));
+        }
+    });
+
+    let productCounter = document.querySelectorAll('#products-table tbody tr').length;
+
+    document.getElementById('add-product').addEventListener('click', function() {
+        const table = document.getElementById('products-table');
+        table.innerHTML += `
+        <tr>
+            <td>
+                <select name="DealProducts[${productCounter}].ProductId" class="form-control">
+                    @foreach (Product item in ViewBag.Products)
+                    {
+                            <option value="@item.Id">@item.Name -- @item.Price</option>
+                    }
+                </select>
+            </td>
+            <td>
+                <input name="DealProducts[${productCounter}].Quantity" type="number" min="1" value="1" class="form-control" />
+            </td>
+            <td>
+                <button type="button" onclick="removeRow(this)" class="btn btn-danger">×</button>
+            </td>
+        </tr>`;
+        productCounter++;
+    });
+
+    function removeRow(button) {
+        const row = button.closest('tr');
+        row.remove();
+    }
+
+    //$.validator.unobtrusive.parse("form");
+
+    document.querySelector('form').addEventListener('submit', function() {
+        const rows = document.querySelectorAll('#products-table tbody tr');
+        rows.forEach((row, index) => {
+            row.querySelector('[name*="ProductId"]').name = `DealProducts[${index}].ProductId`;
+            row.querySelector('[name*="Quantity"]').name = `DealProducts[${index}].Quantity`;
+        });
+    });
+</script>

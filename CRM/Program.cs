@@ -56,11 +56,11 @@ public class Program
 
         app.MapControllerRoute(
             name: "products",
-            pattern: "{controller=Products}/{action=Index}/{id?}").WithStaticAssets();
+            pattern: "{controller=DealProducts}/{action=Index}/{id?}").WithStaticAssets();
 
         app.MapControllerRoute(
             name: "products",
-            pattern: "{controller=Products}/{action=Create}").WithStaticAssets();
+            pattern: "{controller=DealProducts}/{action=Create}").WithStaticAssets();
 
         app.MapControllerRoute(
             name: "deals",

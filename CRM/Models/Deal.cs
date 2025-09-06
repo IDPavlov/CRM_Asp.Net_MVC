@@ -5,7 +5,9 @@ namespace CRM.Models;
 public class Deal
 {
     public int Id { get; set; }
-    public decimal Amount { get; set; }
+
+    public decimal? ServicePrice { get; set; }
+
     public DateTime Date { get; set; } = DateTime.UtcNow;
 
     public int StatusId { get; set; }
@@ -17,22 +19,30 @@ public class Deal
     public int ManagerId { get; set; }
     public Manager Manager { get; set; }
 
-    public int? ProductId { get; set; }
-    public Product? Product { get; set; }
+    public List<DealProduct> DealProducts { get; set; } = new();
+
+    public decimal? TotalAmount => 
+        DealProducts.Sum(dp => dp.Quantity * dp.UnitPrice) + (ServicePrice ?? 0);
 }
+
 
 public class DealStatus
 {
     public int Id { get; set; }
+
     public string Name { get; set; } // "New", "InProgress", "Completed"...
 
     public List<Deal> Deals { get; set; } = new();
 }
 
+
 public class CreateDealDto
 {
-    [Range(0.01, 1000000, ErrorMessage = "Сумма должна быть больше 0")]
-    public decimal Amount { get; set; }
+    [Required]
+    public string DealType { get; set; }  // "product" или "service"
+
+    [Range(0.01, 1000000, ErrorMessage = "Стоимость услуги должна быть больше 0")]
+    public decimal? ServicePrice { get; set; }
 
     [Required(ErrorMessage = "Укажите клиента")]
     public int ClientId { get; set; }
@@ -43,5 +53,5 @@ public class CreateDealDto
     [Required(ErrorMessage = "Укажите менеджера")]
     public int ManagerId { get; set; }
 
-    public int? ProductId { get; set; } = null;
+    public List<CreateDealProductDto> DealProducts { get; set; } = new();
 }

@@ -18,28 +18,35 @@ else
         <thead>
             <tr>
                 <th>Ответственный</th>
-                <th>Продукт</th>
-                <th>Сумма</th>
+                <th>Стоимость</th>
                 <th>Клиент</th>
                 <th>Статус</th>
                 <th>Дата</th>
-                <th>Удалить?</th>
+                <th>Товары</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var deal in Model)
             {
                 <tr>
-                    <td>@deal.Manager?.Name</td> <!-- Проверка на null -->
-                    <td>@deal.Product?.Name</td>
-                    <td>@deal.Amount</td>
+                    <td>@deal.Manager?.Name</td>
+                    <td>@(deal.ServicePrice?.ToString("C") ?? deal.TotalAmount?.ToString("C"))</td>
                     <td>@deal.Client?.Name</td>
                     <td>@deal.Status?.Name</td>
                     <td>@deal.Date.ToString("dd.MM.yyyy")</td>
                     <td>
+                        <ul>
+                            @foreach(DealProduct dealProduct in deal.DealProducts)
+                            {
+                                <li>@dealProduct.Product.Name</li>
+                            }
+                        </ul>
+                    </td>
+                    <td>
                         <form asp-action="Delete" asp-route-id="@deal.Id" method="post">
                             @Html.AntiForgeryToken()
-                            <button type="submit">Удалить</button>
+                            <button type="submit">×</button>
                         </form>
                     </td>
                 </tr>

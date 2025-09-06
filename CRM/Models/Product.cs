@@ -8,5 +8,5 @@ public class Product
     public decimal Price { get; set; }
 
     // Навигационное свойство к сделкам
-    public List<Deal> Deals { get; set; } = new();
+    public List<DealProduct> DealProducts { get; set; } = new();
 }

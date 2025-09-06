@@ -22,7 +22,6 @@ namespace CRM.Controllers
         [Route("")]
         public IActionResult Index()
         {
-            ViewData["Sum"] = db.Deals.Sum(d => d.Amount);
             return View();
         }
 

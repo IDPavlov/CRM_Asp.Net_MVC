@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CRM.Migrations
 {
     [DbContext(typeof(CrmDbContext))]
-    [Migration("20250807143410_DealProductAndManager")]
-    partial class DealProductAndManager
+    [Migration("20250820113317_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,9 +61,6 @@ namespace CRM.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
                     b.Property<int>("ClientId")
                         .HasColumnType("integer");
 
@@ -73,8 +70,8 @@ namespace CRM.Migrations
                     b.Property<int>("ManagerId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<decimal?>("ServicePrice")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("integer");
@@ -85,11 +82,30 @@ namespace CRM.Migrations
 
                     b.HasIndex("ManagerId");
 
-                    b.HasIndex("ProductId");
-
                     b.HasIndex("StatusId");
 
                     b.ToTable("Deals");
+                });
+
+            modelBuilder.Entity("CRM.Models.DealProduct", b =>
+                {
+                    b.Property<int>("DealId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("DealId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("DealProducts");
                 });
 
             modelBuilder.Entity("CRM.Models.DealStatus", b =>
@@ -249,10 +265,6 @@ namespace CRM.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CRM.Models.Product", "Product")
-                        .WithMany("Deals")
-                        .HasForeignKey("ProductId");
-
                     b.HasOne("CRM.Models.DealStatus", "Status")
                         .WithMany("Deals")
                         .HasForeignKey("StatusId")
@@ -263,9 +275,26 @@ namespace CRM.Migrations
 
                     b.Navigation("Manager");
 
-                    b.Navigation("Product");
-
                     b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("CRM.Models.DealProduct", b =>
+                {
+                    b.HasOne("CRM.Models.Deal", "Deal")
+                        .WithMany("DealProducts")
+                        .HasForeignKey("DealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Models.Product", "Product")
+                        .WithMany("DealProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deal");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CRM.Models.Interaction", b =>
@@ -294,6 +323,11 @@ namespace CRM.Migrations
                     b.Navigation("Interactions");
                 });
 
+            modelBuilder.Entity("CRM.Models.Deal", b =>
+                {
+                    b.Navigation("DealProducts");
+                });
+
             modelBuilder.Entity("CRM.Models.DealStatus", b =>
                 {
                     b.Navigation("Deals");
@@ -311,7 +345,7 @@ namespace CRM.Migrations
 
             modelBuilder.Entity("CRM.Models.Product", b =>
                 {
-                    b.Navigation("Deals");
+                    b.Navigation("DealProducts");
                 });
 #pragma warning restore 612, 618
         }

@@ -70,6 +70,8 @@ namespace CRM.Controllers
                 .Include(c => c.Interactions)
                 .Include(c => c.Deals)
                     .ThenInclude(d => d.Status)
+                .Include(c => c.Deals)
+                    .ThenInclude(d => d.DealProducts)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (client == null) 

@@ -1,6 +1,7 @@
 ﻿using CRM.Data;
 using CRM.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Controllers
@@ -19,10 +20,11 @@ namespace CRM.Controllers
         public async Task<IActionResult> Index()
         {
             var deals = await db.Deals
-                .Include(d => d.Manager)     // Подгружаем связанные данные
+                .Include(d => d.Manager)
                 .Include(d => d.Client)
                 .Include(d => d.Status)
-                .Include(d => d.Product)     // Если есть связь с продуктом
+                .Include(d => d.DealProducts)
+                    .ThenInclude(dp => dp.Product)
                 .ToListAsync();
 
             return View(deals);  // Передаём список сделок в представление
@@ -34,8 +36,9 @@ namespace CRM.Controllers
         {
             // Загружаем списки для выпадающих меню
             LoadDropdownData();
-
-            return View();
+            CreateDealDto dto = new();
+            
+            return View(dto);
         }
 
         [HttpPost]
@@ -43,28 +46,58 @@ namespace CRM.Controllers
         [Route("{action}")]
         public async Task<IActionResult> Create(CreateDealDto dto)
         {
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-                Console.WriteLine($"Ошибка: {error.ErrorMessage}");
-            }
 
             if (ModelState.IsValid)
             {
                 var deal = new Deal()
                 {
-                    Amount = dto.Amount,
                     ClientId = dto.ClientId,
                     StatusId = dto.StatusId,
                     ManagerId = dto.ManagerId,
-                    ProductId = dto.ProductId,
-                    Date = DateTime.UtcNow
                 };
+
                 db.Deals.Add(deal);
+
+                //сразу сохраняем, чтобы узнать Id сделки (deal)
                 await db.SaveChangesAsync();
+
+                if (dto.DealType == "service")
+                {
+                    deal.ServicePrice = dto.ServicePrice;
+                }
+                else if (dto.DealType == "product" && !dto.DealProducts.Any())
+                {
+                    ModelState.AddModelError("", "Для товарной сделки нужно добавить хотя бы один товар");
+                    LoadDropdownData();
+                    return View(dto);
+                }
+                else
+                {
+                    foreach (var productDto in dto.DealProducts)
+                    {
+                        deal.DealProducts.Add(new DealProduct
+                        {
+                            DealId = deal.Id,
+                            ProductId = productDto.ProductId,
+                            Quantity = productDto.Quantity,
+                            UnitPrice = await db.Products
+                                .Where(p => p.Id == productDto.ProductId)
+                                .Select(p => p.Price)
+                                .FirstOrDefaultAsync()
+                        });
+                    }
+                }
+
+                await db.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             else
             {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"Ошибка: {error.ErrorMessage}");
+                }
                 LoadDropdownData();
                 return View(dto);
             }

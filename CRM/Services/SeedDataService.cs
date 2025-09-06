@@ -1,5 +1,6 @@
 ﻿using CRM.Data;
 using CRM.Models;
+using Microsoft.EntityFrameworkCore.Storage;
 
 public class SeedDataService
 {
@@ -7,7 +8,7 @@ public class SeedDataService
     {
         using var scope = serviceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<CrmDbContext>();
-
+        
         // Статусы сделок
         if (force || !db.DealStatuses.Any())
         {

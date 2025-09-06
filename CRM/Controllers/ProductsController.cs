@@ -57,7 +57,10 @@ namespace CRM.Controllers
                 await db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            else
+            {
+                return View(product);
+            }
         }
     }
 }

@@ -5,7 +5,7 @@
 
 <h2>Клиенты</h2>
 
-<p><a href="Clients/Create">Создать клиента</a></p>
+<p><a asp-action="Create">Создать клиента</a></p>
 
 <form asp-action="Index" method="get">
     <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" />

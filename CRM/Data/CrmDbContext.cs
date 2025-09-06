@@ -9,6 +9,7 @@ public class CrmDbContext : DbContext
 
     public DbSet<Client> Clients { get; set; }
     public DbSet<Deal> Deals { get; set; }
+    public DbSet<DealProduct> DealProducts { get; set; }
     public DbSet<Interaction> Interactions { get; set; }
     public DbSet<Manager> Managers { get; set; }
     public DbSet<Product> Products { get; set; }
@@ -19,6 +20,8 @@ public class CrmDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<DealProduct>().HasKey(u => new { u.DealId, u.ProductId });
+
         modelBuilder.Entity<DealStatus>().HasData(
             new DealStatus { Id = 1, Name = "New" },
             new DealStatus { Id = 2, Name = "InProgress" },
